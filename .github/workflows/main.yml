@@ -8,7 +8,6 @@ on:
 permissions:
   id-token: write
   pages: write
-  contents: read
   
 jobs:
   build:
@@ -21,7 +20,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!      
-
         
       # lägg till create csv file (glöm inte pip install)
       # lägg till Create JSON file
