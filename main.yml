@@ -1,4 +1,3 @@
---- 
 name: CI/CD Workflow
 
 on:
@@ -13,33 +12,53 @@ permissions:
   
 jobs:
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest    
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!      
+      
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-        
-      # lägg till create csv file (glöm inte pip install)
-      # lägg till Create JSON file
-      # Köra ehnetstester     
-      #python .\calculateTests.py 
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      # Generate CSV file (antag att det finns ett script för detta)
+      - name: Generate CSV file
+        run: python generate_csv.py
+      
+      # Convert CSV to JSON
+      - name: Convert CSV to JSON
+        run: python csvtojson.py
+      
+      # Run unit tests
+      - name: Run unit tests
+        run: python -m unittest discover -s . -p "test_*.py"
+      
+      # Copy files to dist folder
       - name: Copy to dist
         run: |
           mkdir dist
           cp index.html dist/index.html
           cp data.json dist/data.json
-          cp script.js dist/script.js      
+          cp script.js dist/script.js
+
+      # Setup Pages
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v2
+
+      # Upload artifact
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v1
         with:
           path: 'dist'
+
+      # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v1
